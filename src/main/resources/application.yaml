@@ -1,0 +1,21 @@
+# Server
+server:
+  port: 27090
+spring:
+  sql.init.platform: h2
+  task.scheduling.pool.size: 10
+  datasource:
+    url: jdbc:h2:file:./data/demo_db
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-db-console
+      settings.web-allow-others: true
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate.ddl-auto: update
