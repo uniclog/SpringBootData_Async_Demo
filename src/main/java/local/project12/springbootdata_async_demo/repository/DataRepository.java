@@ -10,13 +10,20 @@ import java.util.concurrent.CompletableFuture;
 
 public interface DataRepository extends JpaRepository<DataEntity, Long> {
     @Async
-    CompletableFuture<Set<DataEntity>> findAllByRandomDataAndRandomString(Integer num, String str);
+    CompletableFuture<Set<DataEntity>> findAllByNum1AndNum2(Integer num1, Integer num2);
 
     @Async
     @Query(nativeQuery = true, value = """
                     SELECT count(*) FROM DATA_ENTITY WHERE
-                    RANDOM_DATA = :num and
-                    RANDOM_STRING = :str
+                    NUM1 = :num1 and
+                    NUM2 = :num2
             """)
-    CompletableFuture<Long> findCountAllByParams(Integer num, String str);
+    CompletableFuture<Long> findCountAllByParamsNum1Num2(Integer num1, Integer num2);
+
+    @Async
+    @Query(nativeQuery = true, value = """
+                    SELECT count(*) FROM DATA_ENTITY WHERE
+                    NUM1 = :num1
+            """)
+    CompletableFuture<Long> findCountAllByParamsNum1(Integer num1);
 }

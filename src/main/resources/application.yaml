@@ -3,7 +3,10 @@ server:
   port: 27090
 spring:
   sql.init.platform: h2
-  task.scheduling.pool.size: 10
+  task:
+    scheduling.pool.size: 50
+    execution.pool.core-size: 8
+    execution.pool.max-size: 40
   datasource:
     url: jdbc:h2:file:./data/demo_db
     username: sa
@@ -19,3 +22,7 @@ spring:
     generate-ddl: false
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate.ddl-auto: update
+    properties:
+      hibernate.jdbc:
+        fetch_size: 5000
+        batch_size: 5000
