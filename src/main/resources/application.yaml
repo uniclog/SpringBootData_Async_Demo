@@ -4,9 +4,9 @@ server:
 spring:
   sql.init.platform: h2
   task:
-    scheduling.pool.size: 50
+    scheduling.pool.size: 10
     execution.pool.core-size: 8
-    execution.pool.max-size: 40
+    execution.pool.max-size: 10
   datasource:
     url: jdbc:h2:file:./data/demo_db
     username: sa
@@ -18,11 +18,8 @@ spring:
       path: /h2-db-console
       settings.web-allow-others: true
   jpa:
-    show-sql: true
+    show-sql: false
     generate-ddl: false
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate.ddl-auto: update
-    properties:
-      hibernate.jdbc:
-        fetch_size: 5000
-        batch_size: 5000
+    open-in-view: false
