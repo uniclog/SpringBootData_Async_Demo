@@ -1,14 +1,23 @@
 package local.project12.springbootdata_async_demo.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Random;
 
 import static java.lang.String.format;
 
-@Data
 @Entity
+@Setter
+@Getter
+@ToString
+@RequiredArgsConstructor
 public class DataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,7 +29,6 @@ public class DataEntity {
     private Integer num5;
     private String randomString;
 
-    @Transient
     public static DataEntity build() {
         Random random = new Random();
         DataEntity data = new DataEntity();

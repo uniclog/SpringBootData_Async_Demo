@@ -27,60 +27,71 @@ public class MainController {
     private final DataRepository repository;
 
     @GetMapping("/addRandomData/{count}")
-    private ResponseEntity<DataEntity> addRandomData(@PathVariable String count) {
+    public ResponseEntity<DataEntity> addRandomData(@PathVariable("count") Integer count) {
+        long startMain = System.currentTimeMillis();
         List<DataEntity> list = new ArrayList<>();
         var entity = new DataEntity();
-        for (int i = 0; i < Integer.parseInt(count); i++) {
+        for (int index = 0; index < count; index++) {
+            long start = System.currentTimeMillis();
             entity = DataEntity.build();
             list.add(entity);
-            if (i % 1000000 == 0) {
+            if (index % 100000 == 0) {
                 repository.saveAll(list);
-                list = new ArrayList<>();
+                list.clear();
+                log.info("Last element id: {}, Time: current {}ms, total: {}min",
+                        index,
+                        System.currentTimeMillis() - start,
+                        (System.currentTimeMillis() - startMain) / 1000 / 60);
+            }
+            if (index % 1000000 == 0) {
+                System.gc();
             }
         }
         if (!list.isEmpty()) {
             repository.saveAll(list);
         }
+        log.info("Last element: {}, Total time: {}min", entity,
+                (System.currentTimeMillis() - startMain) / 1000 / 60);
         return ResponseEntity.ok().body(entity);
     }
 
     @GetMapping("/getData/{id}")
-    private ResponseEntity<DataEntity> getData(@PathVariable String id) {
-        var entity = repository.findById(Long.valueOf(id)).orElse(null);
+    public ResponseEntity<DataEntity> getData(@PathVariable Long id) {
+        var entity = repository.findById(id).orElse(null);
         return (nonNull(entity)) ? ResponseEntity.ok().body(entity) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/findAllBy")
-    private ResponseEntity<Set<DataEntity>> findAll(@PathParam("param1") String param1, @PathParam("param2") String param2) {
+    public ResponseEntity<Set<DataEntity>> findAll(@PathParam("num1") Integer num1, @PathParam("num2") Integer num2) {
         var entities = repository
-                .findAllByNum1AndNum2(Integer.valueOf(param1), Integer.valueOf(param2))
+                .findAllByNum1AndNum2(num1, num2)
                 .join();
         return (entities.isEmpty()) ? ResponseEntity.notFound().build() : ResponseEntity.ok().body(entities);
     }
 
     @GetMapping("/findCountAllByParams")
-    public ResponseEntity<Long> findCountAllByParams(@PathParam("param1") String param1, @PathParam("param2") String param2) {
+    public ResponseEntity<Long> findCountAllByParams(@PathParam("num1") Integer num1, @PathParam("num1") Integer num2) {
         var count = repository
-                .findCountAllByParamsNum1Num2(Integer.valueOf(param1), Integer.valueOf(param2))
+                .findCountAllByParamsNum1Num2(num1, num2)
                 .join();
         return ResponseEntity.ok().body(count);
     }
 
     @GetMapping("/findCountAllByParamsNum1")
-    public ResponseEntity<Long> findCountAllByParams(@PathParam("param1") String param1) {
-        var count = getCount(Integer.parseInt(param1));
+    public ResponseEntity<Long> findCountAllByParamsAsync(@PathParam("num1") Integer num1) {
+        var count = getCount(num1);
         return ResponseEntity.ok().body(count);
     }
 
     public Long getCount(int num) {
         List<CompletableFuture<Long>> futures = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            futures.add(getByDatabase(num));
+        for (int i = 0; i < 2; i++) {
+            futures.add(getByDatabase(num + 1));
         }
 
         return futures.stream()
                 .map(CompletableFuture::join)
-                .reduce(0L, Long::sum);
+                .count();
     }
 
     @Async

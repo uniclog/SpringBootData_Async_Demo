@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public interface DataRepository extends JpaRepository<DataEntity, Long> {
-    @Async
+    //Optional<DataEntity> findById(Long id);
+
+     @Async
     CompletableFuture<Set<DataEntity>> findAllByNum1AndNum2(Integer num1, Integer num2);
 
     @Async
